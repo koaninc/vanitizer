@@ -29,73 +29,6 @@ const generateCandidates = domain => (domain
   }, [])
   .reverse());
 
-/*
- * Use this at your own peril
- */
-const isGoogleAppsDomain = domain => (request({
-  uri: `https://www.google.com/a/${domain}/acs`,
-  resolveWithFullResponse: true,
-}).then((res) => {
-  if (res.statusCode && res.statusCode === 200 && !res.body) {
-    return {
-      status: true,
-      err: null,
-    };
-  }
-  return {
-    status: false,
-    err: null,
-  };
-}).catch(err => ({
-  status: false,
-  err,
-})));
-
-const isGoogleEmail = domain => (resolve(domain, 'MX')
-  .then(records => records.some((record) => {
-    if (!record.exchange) {
-      return false;
-    }
-    return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
-  })));
-
-const isDisposable = (email) => {
-  let domain;
-  try {
-    domain = extractDomain(email);
-  } catch (err) {
-    return {
-      status: false,
-      error: 'invalid_email',
-    };
-  }
-  const status = Boolean(DISPOSABLE_EMAILS[domain]);
-
-  return {
-    status,
-    error: null,
-  };
-};
-
-const isFreeMail = (email) => {
-  let domain;
-  try {
-    domain = extractDomain(email);
-  } catch (err) {
-    return {
-      status: false,
-      error: 'invalid_email',
-    };
-  }
-  const status = Boolean(FREE_EMAILS[domain]);
-
-  return {
-    status,
-    error: null,
-  };
-};
-
-
 const checkCandidate = (whitelist, blacklist) => (candidate) => {
   if (blacklist[candidate]) {
     return {
@@ -158,6 +91,72 @@ const checkEmailDomain = (whitelist, blacklist) => (domain) => {
     domain,
     status: true,
     description: null,
+  };
+};
+
+/*
+ * Use this at your own peril
+ */
+const isGoogleAppsDomain = domain => (request({
+  uri: `https://www.google.com/a/${domain}/acs`,
+  resolveWithFullResponse: true,
+}).then((res) => {
+  if (res.statusCode && res.statusCode === 200 && !res.body) {
+    return {
+      status: true,
+      err: null,
+    };
+  }
+  return {
+    status: false,
+    err: null,
+  };
+}).catch(err => ({
+  status: false,
+  err,
+})));
+
+const isGoogleEmail = domain => (resolve(domain, 'MX')
+  .then(records => records.some((record) => {
+    if (!record.exchange) {
+      return false;
+    }
+    return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+  })));
+
+const isDisposableEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(DISPOSABLE_EMAILS[domain]);
+
+  return {
+    status,
+    error: null,
+  };
+};
+
+const isFreeEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(FREE_EMAILS[domain]);
+
+  return {
+    status,
+    error: null,
   };
 };
 
@@ -256,8 +255,8 @@ const getDomains = (opts = {}) => (email) => {
 module.exports = {
   isGoogleAppsDomain,
   isGoogleEmail,
-  isDisposable,
-  isFreeMail,
+  isDisposableEmail,
+  isFreeEmail,
   isWorkEmail,
   getDomains,
 };

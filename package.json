@@ -15,7 +15,11 @@
     "vanity url"
   ],
   "author": "Arend Naylor",
-  "license": "ISC",
+  "license": "MIT",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/koaninc/vanitizer.git"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.16.0",

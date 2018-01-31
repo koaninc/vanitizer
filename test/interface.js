@@ -2,8 +2,8 @@ const { assert } = require('chai');
 const {
   isGoogleAppsDomain,
   isGoogleEmail,
-  isDisposable,
-  isFreeMail,
+  isDisposableEmail,
+  isFreeEmail,
   isWorkEmail,
   getDomains,
 } = require('../');
@@ -32,12 +32,12 @@ describe('interface test', () => {
   it('isGoogleEmail', async () => {
     assert.equal(await isGoogleEmail('koan.co'), true);
   });
-  it('isDisposable', async () => {
-    assert.equal(await isDisposable('asdf@mailinator.com').status, true);
-    assert.equal(await isDisposable('asdf@koan.co').status, false);
+  it('isDisposableEmail', async () => {
+    assert.equal(await isDisposableEmail('asdf@mailinator.com').status, true);
+    assert.equal(await isDisposableEmail('asdf@koan.co').status, false);
   });
-  it('isFreeMail', async () => {
-    assert.equal(await isFreeMail('asdf@gmail.com').status, true);
-    assert.equal(await isFreeMail('asdf@koan.co').status, false);
+  it('isFreeEmail', async () => {
+    assert.equal(await isFreeEmail('asdf@gmail.com').status, true);
+    assert.equal(await isFreeEmail('asdf@koan.co').status, false);
   });
 });

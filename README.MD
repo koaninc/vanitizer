@@ -1,6 +1,6 @@
 # Vanity Url Generator from email
-> Vanity urls are a way to segment your users, usually by organization or community, for the purposes of allowing group 
-discovery and personalization in your web application 
+> Vanity urls are a way to segment your users in your web application, usually by organization or community, for the purposes of allowing group 
+discovery and personalization.
 
 These generally work utilizing wildcard records allowing organization names to be placed
 before the websites fully qualified domain name. These generally follow the format:
@@ -28,7 +28,6 @@ Include the features you'd like to use:
 
 ```
 const {
-  isGoogleAppsDomain,
   isDisposable,
   isFreeMail,
   isGoogleEmail,
@@ -39,19 +38,29 @@ const {
 // Returns domains based on email
 const opts = {
  logger, // uses DEBUG lib by defaul
- whitelist, // json object format: ({ "candidate_name": true })
- blacklist, // json object format: ({ "candidate_name2": true })
+ wordWhitelist, // json object format: ({ "candidate_name": true })
+ wordBlacklist, // json object format: ({ "candidate_name2": true })
+ domainBlacklist, // json object format: ({ "candidate.com": true })
+ domainWhitelist, // json object format: ({ "candidate2.com": true })
 }; // can be undefined
 
-getDomains(opts)('matt@koan.co'); // returns { domains: [ 'koan', 'koan-co' ], valid: true, err: null }
-getDomains(opts)('matt@product.koan.co'); // { domains: [ 'koan', 'koan-co' ], valid: true, err: null }
-getDomains('matt@koan.co.uk'); // returns { domains: [ 'koan', 'koan-co-uk' ], valid: true, err: null }
+getDomains(opts)('asdf@koan.co'); // returns { domains: [ 'koan', 'koan-co' ], status: true, err: null }
+getDomains(opts)('asdf@product.koan.co'); // { domains: [ 'koan', 'koan-co' ], status: true, err: null }
+getDomains('asdf@koan.co.uk'); // returns { domains: [ 'koan', 'koan-co-uk' ], status: true, err: null }
 getDomains('koan.co'); //
 
-// Is work email
+// Is work email address
 isWorkEmail('asdf@koan.co'); // returns { status: true, error: null }
 isWorkEmail('asdf@gmai.com'); // returns { status: false, error: null }
 isWorkEmail('asdf@koan'); // returns { status: false, error: 'invalid_email' }
+
+// Is free email address
+isFreeEmail('asdf@koan.co'); // returns { status: false, error: null }
+isFreeEmail('asdf@gmai.com'); // returns { status: true, error: null }
+
+// Is disposable email address
+isFreeEmail('asdf@koan.co'); // returns { status: false, error: null }
+isFreeEmail('asdf@gmai.com'); // returns { status: true, error: null }
 
 ```
 
