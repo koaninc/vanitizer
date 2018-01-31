@@ -1,4 +1,4 @@
-# Vanity Url Generator from email
+# Vanity URL generator from email
 > Vanity urls are a way to segment your users in your web application, usually by organization or community, for the purposes of allowing group 
 discovery and personalization.
 
@@ -24,16 +24,14 @@ npm install --save vanitizer
 
 ## Usage
 
-Include the features you'd like to use:
-
 ```
 const {
-  isDisposable,
-  isFreeMail,
   isGoogleEmail,
+  isDisposableEmail,
+  isFreeEmail,
   isWorkEmail,
-  getDomains
-}
+  getDomains,
+} = ;
 
 // Returns domains based on email
 const opts = {
@@ -51,17 +49,20 @@ getDomains('koan.co'); //
 
 // Is work email address
 isWorkEmail('asdf@koan.co'); // returns { status: true, error: null }
-isWorkEmail('asdf@gmai.com'); // returns { status: false, error: null }
+isWorkEmail('asdf@gmail.com'); // returns { status: false, error: null }
 isWorkEmail('asdf@koan'); // returns { status: false, error: 'invalid_email' }
 
 // Is free email address
 isFreeEmail('asdf@koan.co'); // returns { status: false, error: null }
-isFreeEmail('asdf@gmai.com'); // returns { status: true, error: null }
+isFreeEmail('asdf@gmail.com'); // returns { status: true, error: null }
 
 // Is disposable email address
-isFreeEmail('asdf@koan.co'); // returns { status: false, error: null }
-isFreeEmail('asdf@gmai.com'); // returns { status: true, error: null }
+isDisposableEmail('asdf@koan.co'); // returns { status: false, error: null }
+isDisposableEmail('asdf@mailinator.com'); // returns { status: true, error: null }
 
+// Is free email address
+isGoogleEmail('asdf@koan.co'); // returns { status: true, error: null }
+isGoogleEmail('asdf@gmail.com'); // returns { status: true, error: null }
 ```
 
 ## Credits & Content

@@ -14,7 +14,7 @@
     "vanityUrl",
     "vanity url"
   ],
-  "author": "Arend Naylor",
+  "author": "Arend Naylor <arend@koan.co>",
   "license": "MIT",
   "repository" : {
     "type" : "git",
