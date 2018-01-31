@@ -1,0 +1,33 @@
+{
+  "name": "vanitizer",
+  "version": "0.0.1",
+  "description": "create organization centric vanity urls from email addresses",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "vanity_url",
+    "vanityUrl",
+    "vanity url"
+  ],
+  "author": "Arend Naylor",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "debug": "^3.1.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "tldjs": "^2.2.0",
+    "validator": "^9.4.0"
+  }
+}
