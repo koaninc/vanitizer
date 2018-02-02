@@ -1,6 +1,6 @@
 {
   "name": "vanitizer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "create organization centric vanity urls from email addresses",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,7 @@
     "vanityUrl",
     "vanity url"
   ],
-  "author": "Arend Naylor <arend@koan.co>",
+  "author": "Arend Naylor <arendn@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

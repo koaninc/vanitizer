@@ -60,7 +60,7 @@ isFreeEmail('asdf@gmail.com'); // returns { status: true, error: null }
 isDisposableEmail('asdf@koan.co'); // returns { status: false, error: null }
 isDisposableEmail('asdf@mailinator.com'); // returns { status: true, error: null }
 
-// Is free email address
+// Is a google email address
 isGoogleEmail('asdf@koan.co'); // returns { status: true, error: null }
 isGoogleEmail('asdf@gmail.com'); // returns { status: true, error: null }
 ```

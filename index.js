@@ -252,6 +252,12 @@ const getDomains = (opts = {}) => (email) => {
   };
 };
 
+const getSubLevelDomain = (email) => {
+  const fqdn = extractDomain(email);
+  const { domain } = parse(fqdn);
+  return domain;
+};
+
 module.exports = {
   isGoogleAppsDomain,
   isGoogleEmail,
@@ -259,4 +265,6 @@ module.exports = {
   isFreeEmail,
   isWorkEmail,
   getDomains,
+  getSubLevelDomain,
+  getDomainCandidates: getDomains,
 };

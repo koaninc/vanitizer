@@ -6,6 +6,7 @@ const {
   isFreeEmail,
   isWorkEmail,
   getDomains,
+  getSubLevelDomain,
 } = require('../');
 
 describe('interface test', () => {
@@ -19,6 +20,9 @@ describe('interface test', () => {
     assert.equal(getDomains({ domainBlacklist: { 'koan.co': true } })('asdf@koan.co').status, false);
     assert.equal(getDomains({ wordWhitelist: { shit: true } })('asdf@shit.com').status, true);
     assert.equal(getDomains({ wordBlacklist: { koan: true } })('asdf@koan.co').status, false);
+  });
+  it('getSubLevelDomain', () => {
+    assert.equal(getSubLevelDomain('asdf@usa.ibm.com'), 'ibm.com');
   });
   it('isWorkEmail', () => {
     assert.equal(isWorkEmail('asdf@koan.co').status, true);
