@@ -34,7 +34,7 @@ describe('interface test', () => {
     assert.equal((await isGoogleAppsDomain('koan.com')).status, false);
   });
   it('isGoogleEmail', async () => {
-    assert.equal(await isGoogleEmail('koan.co'), true);
+    assert.equal(await isGoogleEmail('asdf@koan.co'), true);
   });
   it('isDisposableEmail', async () => {
     assert.equal(await isDisposableEmail('asdf@mailinator.com').status, true);

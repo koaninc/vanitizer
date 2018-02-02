@@ -116,13 +116,16 @@ const isGoogleAppsDomain = domain => (request({
   err,
 })));
 
-const isGoogleEmail = domain => (resolve(domain, 'MX')
-  .then(records => records.some((record) => {
-    if (!record.exchange) {
-      return false;
-    }
-    return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
-  })));
+const isGoogleEmail = (email) => {
+  const domain = extractDomain(email);
+  return resolve(domain, 'MX')
+    .then(records => records.some((record) => {
+      if (!record.exchange) {
+        return false;
+      }
+      return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+    }));
+};
 
 const isDisposableEmail = (email) => {
   let domain;

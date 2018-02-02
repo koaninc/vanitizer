@@ -1,6 +1,6 @@
 {
   "name": "vanitizer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "create organization centric vanity urls from email addresses",
   "main": "index.js",
   "directories": {
