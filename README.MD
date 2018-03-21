@@ -31,7 +31,7 @@ const {
   isFreeEmail,
   isWorkEmail,
   getDomains,
-} = ;
+} = require('vanitizer');
 
 // Returns domains based on email
 const opts = {
