@@ -5,8 +5,6 @@ const Promise = require('bluebird');
 const dns = require('dns');
 const debug = require('debug');
 
-const resolve = Promise.promisify(dns.resolve);
-
 const DISPOSABLE_EMAILS = require('./lib/disposable.json');
 const FREE_EMAILS = require('./lib/free.json');
 const BAD_WORDS = require('./lib/badwords.json');
@@ -94,12 +92,15 @@ const checkEmailDomain = (whitelist, blacklist) => (domain) => {
   };
 };
 
+const DEFAULT_TIMEOUT = 10000;
+
 /*
  * Use this at your own peril
  */
-const isGoogleAppsDomain = domain => (request({
+const isGoogleAppsDomain = (domain, { timeout = DEFAULT_TIMEOUT } = {}) => request({
   uri: `https://www.google.com/a/${domain}/acs`,
   resolveWithFullResponse: true,
+  timeout,
 }).then((res) => {
   if (res.statusCode && res.statusCode === 200 && !res.body) {
     return {
@@ -111,19 +112,25 @@ const isGoogleAppsDomain = domain => (request({
     status: false,
     err: null,
   };
-}).catch(err => ({
-  status: false,
-  err,
-})));
+});
 
-const isGoogleEmail = (email) => {
+const isGoogleEmail = (email, { timeout = DEFAULT_TIMEOUT } = {}) => {
   const domain = extractDomain(email);
-  return resolve(domain, 'MX')
-    .then(records => records.some((record) => {
-      if (!record.exchange) {
-        return false;
+  const resolver = new dns.Resolver();
+  const cancelTimer = setTimeout(() => resolver.cancel(), timeout);
+  return new Promise((resolve, reject) =>
+    resolver.resolveMx(domain, (err, records) => {
+      clearTimeout(cancelTimer);
+      if (err) {
+        return reject(err);
       }
-      return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+
+      return resolve(records.some((record) => {
+        if (!record.exchange) {
+          return false;
+        }
+        return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+      }));
     }));
 };
 

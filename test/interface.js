@@ -36,6 +36,11 @@ describe('interface test', () => {
   it('isGoogleEmail', async () => {
     assert.equal(await isGoogleEmail('asdf@koan.co'), true);
   });
+  it('isGoogleEmail times out', () =>
+    isGoogleEmail('asdf@koan.co', { timeout: 1 })
+      .then(() => { throw new Error('Expected .isGoogleEmail to throw!'); })
+      .catch(() => null));
+
   it('isDisposableEmail', async () => {
     assert.equal(await isDisposableEmail('asdf@mailinator.com').status, true);
     assert.equal(await isDisposableEmail('asdf@koan.co').status, false);
