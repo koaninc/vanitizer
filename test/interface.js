@@ -6,6 +6,7 @@ const {
   isFreeEmail,
   isWorkEmail,
   isIspEmail,
+  isDeliverableEmail,
   getDomains,
   getSubLevelDomain,
 } = require('../');
@@ -33,7 +34,6 @@ describe('interface test', () => {
   it('isIspEmail', () => {
     assert.equal(isIspEmail('asdf@comcast.net').status, true);
     assert.equal(isIspEmail('asdf@comcast.com').status, false);
-    assert.equal(isWorkEmail('asdf@asdf').status, false);
   });
   it('isGoogleAppsDomain', async () => {
     assert.equal((await isGoogleAppsDomain('koan.co')).status, true);
@@ -43,6 +43,17 @@ describe('interface test', () => {
     assert.equal(await isGoogleEmail('asdf@koan.co'), true);
   });
   it('isGoogleEmail times out', () =>
+    isGoogleEmail('asdf@koan.co', { timeout: 1 })
+      .then(() => { throw new Error('Expected .isGoogleEmail to throw!'); })
+      .catch(() => null));
+  it('isDeliverableEmail', async () => {
+    assert.equal(await isDeliverableEmail('asdf@koan.co'), true);
+  });
+  it('isDeliverableEmail rejects undeliverable', async () => {
+    assert.equal(await isDeliverableEmail('asdf@asdf'), false);
+  });
+
+  it('isDeliverableEmail times out', () =>
     isGoogleEmail('asdf@koan.co', { timeout: 1 })
       .then(() => { throw new Error('Expected .isGoogleEmail to throw!'); })
       .catch(() => null));

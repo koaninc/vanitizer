@@ -115,8 +115,7 @@ const isGoogleAppsDomain = (domain, { timeout = DEFAULT_TIMEOUT } = {}) => reque
   };
 });
 
-const isGoogleEmail = (email, { timeout = DEFAULT_TIMEOUT } = {}) => {
-  const domain = extractDomain(email);
+const resolveMx = (domain, { timeout = DEFAULT_TIMEOUT } = {}) => {
   const resolver = new dns.Resolver();
   const cancelTimer = setTimeout(() => resolver.cancel(), timeout);
   return new Promise((resolve, reject) =>
@@ -126,14 +125,23 @@ const isGoogleEmail = (email, { timeout = DEFAULT_TIMEOUT } = {}) => {
         return reject(err);
       }
 
-      return resolve(records.some((record) => {
-        if (!record.exchange) {
-          return false;
-        }
-        return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
-      }));
+      return resolve(records);
     }));
 };
+
+const isDeliverableEmail = (email, opts) =>
+  resolveMx(extractDomain(email), opts)
+    .then(records => Boolean(records && records.length > 0))
+    .catch(e => false);
+
+const isGoogleEmail = (email, opts) =>
+  resolveMx(extractDomain(email), opts)
+    .then(records => records.some((record) => {
+      if (!record.exchange) {
+        return false;
+      }
+      return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+    }));
 
 const isDisposableEmail = (email) => {
   let domain;
@@ -293,6 +301,7 @@ module.exports = {
   isFreeEmail,
   isWorkEmail,
   isIspEmail,
+  isDeliverableEmail,
   getDomains,
   getSubLevelDomain,
   getDomainCandidates: getDomains,
