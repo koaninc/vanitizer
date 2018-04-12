@@ -8,6 +8,7 @@ const debug = require('debug');
 const DISPOSABLE_EMAILS = require('./lib/disposable.json');
 const FREE_EMAILS = require('./lib/free.json');
 const BAD_WORDS = require('./lib/badwords.json');
+const ISP_EMAILS = require('./lib/isps.json');
 
 const GMAIL_MX_STRING = 'aspmx.l.google.com';
 
@@ -187,6 +188,23 @@ const isWorkEmail = (email) => {
   };
 };
 
+const isIspEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(ISP_EMAILS[domain]);
+  return {
+    status,
+    error: null,
+  };
+};
+
 const getDomains = (opts = {}) => (email) => {
   const wordWhitelist = opts.wordWhitelist || {};
   const wordBlacklist = opts.wordBlacklist || {};
@@ -274,6 +292,7 @@ module.exports = {
   isDisposableEmail,
   isFreeEmail,
   isWorkEmail,
+  isIspEmail,
   getDomains,
   getSubLevelDomain,
   getDomainCandidates: getDomains,

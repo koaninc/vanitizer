@@ -47,18 +47,22 @@ getDomains(opts)('asdf@product.koan.co'); // { domains: [ 'koan', 'koan-co' ], s
 getDomains('asdf@koan.co.uk'); // returns { domains: [ 'koan', 'koan-co-uk' ], status: true, err: null }
 getDomains('koan.co'); //
 
-// Is work email address
+// Is a work email address
 isWorkEmail('asdf@koan.co'); // returns { status: true, error: null }
 isWorkEmail('asdf@gmail.com'); // returns { status: false, error: null }
 isWorkEmail('asdf@koan'); // returns { status: false, error: 'invalid_email' }
 
-// Is free email address
+// Is a free email address
 isFreeEmail('asdf@koan.co'); // returns { status: false, error: null }
 isFreeEmail('asdf@gmail.com'); // returns { status: true, error: null }
 
-// Is disposable email address
+// Is a disposable email address
 isDisposableEmail('asdf@koan.co'); // returns { status: false, error: null }
 isDisposableEmail('asdf@mailinator.com'); // returns { status: true, error: null }
+
+// Is a ISP provided email address
+isIspEmail('asdf@comcast.net'); // returns { status: true, error: null }
+isIspEmail('asdf@comcast.com'); // returns { status: false, error: null }
 
 // Is a google email address
 isGoogleEmail('asdf@koan.co'); // returns { status: true, error: null }
