@@ -1,21 +1,19 @@
-const validator = require('validator');
+const isEmail = require('isemail');
 const { parse } = require('tldjs');
 const request = require('request-promise');
 const Promise = require('bluebird');
 const dns = require('dns');
 const debug = require('debug');
 
-const resolve = Promise.promisify(dns.resolve);
-
 const DISPOSABLE_EMAILS = require('./lib/disposable.json');
 const FREE_EMAILS = require('./lib/free.json');
 const BAD_WORDS = require('./lib/badwords.json');
+const ISP_EMAILS = require('./lib/isps.json');
 
 const GMAIL_MX_STRING = 'aspmx.l.google.com';
 
 const extractDomain = (email) => {
-  if (!validator.isEmail(email)) {
-    // left over from joi
+  if (!isEmail.validate(email)) {
     throw new Error('invalid email');
   }
   return email.split('@')[1].trim();
@@ -28,73 +26,6 @@ const generateCandidates = domain => (domain
     return acc;
   }, [])
   .reverse());
-
-/*
- * Use this at your own peril
- */
-const isGoogleAppsDomain = domain => (request({
-  uri: `https://www.google.com/a/${domain}/acs`,
-  resolveWithFullResponse: true,
-}).then((res) => {
-  if (res.statusCode && res.statusCode === 200 && !res.body) {
-    return {
-      status: true,
-      err: null,
-    };
-  }
-  return {
-    status: false,
-    err: null,
-  };
-}).catch(err => ({
-  status: false,
-  err,
-})));
-
-const isGoogleEmail = domain => (resolve(domain, 'MX')
-  .then(records => records.some((record) => {
-    if (!record.exchange) {
-      return false;
-    }
-    return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
-  })));
-
-const isDisposable = (email) => {
-  let domain;
-  try {
-    domain = extractDomain(email);
-  } catch (err) {
-    return {
-      status: false,
-      error: 'invalid_email',
-    };
-  }
-  const status = Boolean(DISPOSABLE_EMAILS[domain]);
-
-  return {
-    status,
-    error: null,
-  };
-};
-
-const isFreeMail = (email) => {
-  let domain;
-  try {
-    domain = extractDomain(email);
-  } catch (err) {
-    return {
-      status: false,
-      error: 'invalid_email',
-    };
-  }
-  const status = Boolean(FREE_EMAILS[domain]);
-
-  return {
-    status,
-    error: null,
-  };
-};
-
 
 const checkCandidate = (whitelist, blacklist) => (candidate) => {
   if (blacklist[candidate]) {
@@ -161,6 +92,92 @@ const checkEmailDomain = (whitelist, blacklist) => (domain) => {
   };
 };
 
+const DEFAULT_TIMEOUT = 10000;
+
+/*
+ * Use this at your own peril
+ */
+const isGoogleAppsDomain = (domain, { timeout = DEFAULT_TIMEOUT } = {}) => request({
+  uri: `https://www.google.com/a/${domain}/acs`,
+  resolveWithFullResponse: true,
+  timeout,
+}).then((res) => {
+  if (res.statusCode && res.statusCode === 200 && !res.body) {
+    return {
+      status: true,
+      err: null,
+    };
+  }
+  return {
+    status: false,
+    err: null,
+  };
+});
+
+const resolveMx = (domain, { timeout = DEFAULT_TIMEOUT } = {}) => {
+  const resolver = new dns.Resolver();
+  const cancelTimer = setTimeout(() => resolver.cancel(), timeout);
+  return new Promise((resolve, reject) =>
+    resolver.resolveMx(domain, (err, records) => {
+      clearTimeout(cancelTimer);
+      if (err) {
+        return reject(err);
+      }
+
+      return resolve(records);
+    }));
+};
+
+const isDeliverableEmail = (email, opts) =>
+  resolveMx(extractDomain(email), opts)
+    .then(records => Boolean(records && records.length > 0))
+    .catch(e => false);
+
+const isGoogleEmail = (email, opts) =>
+  resolveMx(extractDomain(email), opts)
+    .then(records => records.some((record) => {
+      if (!record.exchange) {
+        return false;
+      }
+      return record.exchange.toLowerCase().includes(GMAIL_MX_STRING);
+    }));
+
+const isDisposableEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(DISPOSABLE_EMAILS[domain]);
+
+  return {
+    status,
+    error: null,
+  };
+};
+
+const isFreeEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(FREE_EMAILS[domain]);
+
+  return {
+    status,
+    error: null,
+  };
+};
+
 const isWorkEmail = (email) => {
   let domain;
   try {
@@ -172,6 +189,23 @@ const isWorkEmail = (email) => {
     };
   }
   const status = Boolean(!FREE_EMAILS[domain] && !DISPOSABLE_EMAILS[domain]);
+  return {
+    status,
+    error: null,
+  };
+};
+
+const isIspEmail = (email) => {
+  let domain;
+  try {
+    domain = extractDomain(email);
+  } catch (err) {
+    return {
+      status: false,
+      error: 'invalid_email',
+    };
+  }
+  const status = Boolean(ISP_EMAILS[domain]);
   return {
     status,
     error: null,
@@ -253,11 +287,21 @@ const getDomains = (opts = {}) => (email) => {
   };
 };
 
+const getSubLevelDomain = (email) => {
+  const fqdn = extractDomain(email);
+  const { domain } = parse(fqdn);
+  return domain;
+};
+
 module.exports = {
   isGoogleAppsDomain,
   isGoogleEmail,
-  isDisposable,
-  isFreeMail,
+  isDisposableEmail,
+  isFreeEmail,
   isWorkEmail,
+  isIspEmail,
+  isDeliverableEmail,
   getDomains,
+  getSubLevelDomain,
+  getDomainCandidates: getDomains,
 };
