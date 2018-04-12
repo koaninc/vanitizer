@@ -30,9 +30,9 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "debug": "^3.1.0",
+    "isemail": "^3.1.2",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
-    "tldjs": "^2.2.0",
-    "validator": "^9.4.0"
+    "tldjs": "^2.2.0"
   }
 }

@@ -28,7 +28,6 @@ describe('interface test', () => {
   it('isWorkEmail', () => {
     assert.equal(isWorkEmail('asdf@koan.co').status, true);
     assert.equal(isWorkEmail('asdf@gmail.com').status, false);
-    assert.equal(isWorkEmail('asdf@asdf').status, false);
   });
   it('isIspEmail', () => {
     assert.equal(isIspEmail('asdf@comcast.net').status, true);
