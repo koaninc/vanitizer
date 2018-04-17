@@ -1,4 +1,4 @@
-const validator = require('validator');
+const isEmail = require('isemail');
 const { parse } = require('tldjs');
 const request = require('request-promise');
 const Promise = require('bluebird');
@@ -13,8 +13,7 @@ const ISP_EMAILS = require('./lib/isps.json');
 const GMAIL_MX_STRING = 'aspmx.l.google.com';
 
 const extractDomain = (email) => {
-  if (!validator.isEmail(email)) {
-    // left over from joi
+  if (!isEmail.validate(email)) {
     throw new Error('invalid email');
   }
   return email.split('@')[1].trim();
