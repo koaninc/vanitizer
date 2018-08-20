@@ -1,6 +1,6 @@
 {
   "name": "vanitizer",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "create organization centric vanity urls from email addresses",
   "main": "index.js",
   "directories": {
@@ -23,16 +23,16 @@
   },
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^4.16.0",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
+    "eslint-plugin-import": "^2.14.0"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
     "debug": "^3.1.0",
     "isemail": "^3.1.2",
-    "request": "^2.83.0",
+    "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "tldjs": "^2.2.0"
+    "tldjs": "^2.3.1"
   }
 }
